@@ -1,0 +1,63 @@
+---
+title: "Analysis"
+author: "Matthieu Tuffery"
+date: "15/02/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The sequences are loaded form Sequences.csv. 4 column A,C,G,T are added. They are empty for now. A column containing only the reference identifier of the column is added.  
+```{r}
+Sequences = read.csv(file = "Sequences.csv")
+Sequences$A = rep(0, 3)
+Sequences$C = rep(0, 3)
+Sequences$G = rep(0, 3)
+Sequences$T = rep(0, 3)
+Sequences$Short_Name = sub("(\\S+)(.+)","\\1" , Sequences$Name)
+```
+
+The function Nucleotide_count return the difference between the sequence (seq) length and its length after a nucleotide (N) has been removed --> the number of the specified nucleotide. 
+The for loops prints the sequence and how many of each nucleotides there is.
+It also fills the dataframe with nucleotide counts.
+```{r}
+Nucleotide_count = function(N, seq){
+  return(nchar(Sequences$Sequence[seq]) - nchar(gsub(N, "", Sequences$Sequence[seq])))
+                                    }
+  
+
+for(i in 1:3){   # for each sequence
+  print(
+    paste(
+      "the sequence",
+      i,
+      "is",
+      Sequences$Sequence[i]
+          )
+        ) # the sequence is printed
+  for(n in c("A","C","G","T")){ # and for each nucleotides
+    Sequences[i,n] = Nucleotide_count(n,i)#the count is added to the cell of the dataframe
+                              }
+              }
+```
+A table containing the the number of each nucleotides
+```{r}
+Sequences[,c(1,3:6)]
+```
+https://media.nature.com/lw1024/magazine-assets/d41586-019-03679-x/d41586-019-03679-x_17438782.jpg
+![A nice picture of bacteria](https://media.nature.com/lw1024/magazine-assets/d41586-019-03679-x/d41586-019-03679-x_17438782.jpg)
+
+ to access wikipedia click [here](https://en.wikipedia.org/wiki/Borrelia_burgdorferi) or [here](https://fr.wikipedia.org/wiki/Borrelia_burgdorferi) for a version in french.
+ 
+Adds a GC_content column to the dataframe, adds the proportion of (G + C) / length, multiplied by 100 to have it in %.
+print a table containing of the GC content
+```{r}
+Sequences$GC_content = 100*(Sequences$G + Sequences$C)/nchar(Sequences$Sequence)
+
+Sequences[,c("Short_Name","GC_content")]
+```
+ 
+ 
+ 
